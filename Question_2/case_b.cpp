@@ -18,15 +18,15 @@ int main(){
 
 
 
-    cout << "Enter the lambda_1 value in rate/second: " << endl;
+    std::cout << "Enter the lambda_1 value in rate/second: " << endl;
     cin >> lambda_1;
 
-    cout << "Enter the mu_1 value in rate/second: " << endl;
+    std::cout << "Enter the mu_1 value in rate/second: " << endl;
     cin >> mu_1;
     
 
-    std::random_device rd; 
-    std::mt19937 rnd_gen (rd ());
+    random_device rd; 
+    mt19937 rnd_gen (rd ());
 
     exponential_distribution<> lambda_generator (lambda_1);
     exponential_distribution<> mu_generator (mu_1);
@@ -72,11 +72,60 @@ int main(){
 
         }
         else if((processing_state_1 == 0) && (processing_state_2 == 1)){
+            if (next_incoming_timing <= processing_complete_timing_2){
+                // give this worker to first guy
 
+                current_time = next_incoming_timing;
 
+                currently_processing_1 = {current_time, current_time, 0};
+
+                next_incoming_timing = current_time + lambda_generator(rnd_gen);
+                processing_complete_timing_1 = current_time + mu_generator(rnd_gen);
+                processing_state_1 = 1;
+
+            }
+            else{
+
+                current_time = processing_complete_timing_2;
+                currently_processing_2.z = current_time;
+
+                avg_number_of_migrants_getting_checked += (currently_processing_2.z - currently_processing_2.y);
+                avg_response_time += (currently_processing_2.z - currently_processing_2.x);
+                avg_time_for_migrant_in_queue += (currently_processing_2.y - currently_processing_2.x); 
+                avg_number_of_migrant_in_queue += (currently_processing_2.y - currently_processing_2.x);
+                completed_migrants += 1;
+
+                if (completed_migrants == total_migrants) break;
+                processing_state_2 = 0;
+            }
         }
         else if((processing_state_1 == 1) && (processing_state_2 == 0)){
+            if (next_incoming_timing <= processing_complete_timing_1){
+                // give this worker to first guy
 
+                current_time = next_incoming_timing;
+
+                currently_processing_2 = {current_time, current_time, 0};
+
+                next_incoming_timing = current_time + lambda_generator(rnd_gen);
+                processing_complete_timing_2 = current_time + mu_generator(rnd_gen);
+                processing_state_2 = 1;
+
+            }
+            else{
+
+                current_time = processing_complete_timing_1;
+                currently_processing_1.z = current_time;
+
+                avg_number_of_migrants_getting_checked += (currently_processing_1.z - currently_processing_1.y);
+                avg_response_time += (currently_processing_1.z - currently_processing_1.x);
+                avg_time_for_migrant_in_queue += (currently_processing_1.y - currently_processing_1.x); 
+                avg_number_of_migrant_in_queue += (currently_processing_1.y - currently_processing_1.x);
+                completed_migrants += 1;
+
+                if (completed_migrants == total_migrants) break;
+                processing_state_1 = 0;
+            }
 
 
         }
@@ -85,35 +134,58 @@ int main(){
 
 
             // The border agent is not empty
-            if (next_incoming_timing <= processing_complete_timing){
+            if (next_incoming_timing <= min(processing_complete_timing_2, processing_complete_timing_1)){
             // Next migrant is coming
                 current_time = next_incoming_timing;
                 next_incoming_timing = current_time + lambda_generator(rnd_gen);
                 waiting_q.push({current_time, 0, 0});
             }
-            else{
-            // Migrant is getting processed and leaving
-                current_time = processing_complete_timing;
-                currently_processing.z = current_time;
+            else if(processing_complete_timing_2 == min(processing_complete_timing_2, processing_complete_timing_1)){
+                current_time = processing_complete_timing_2;
+                currently_processing_2.z = current_time;
 
-                avg_number_of_migrants_getting_checked += (currently_processing.z - currently_processing.y);
-                avg_response_time += (currently_processing.z - currently_processing.x);
-                avg_time_for_migrant_in_queue += (currently_processing.y - currently_processing.x); 
-                avg_number_of_migrant_in_queue += (currently_processing.y - currently_processing.x);
+                avg_number_of_migrants_getting_checked += (currently_processing_2.z - currently_processing_2.y);
+                avg_response_time += (currently_processing_2.z - currently_processing_2.x);
+                avg_time_for_migrant_in_queue += (currently_processing_2.y - currently_processing_2.x); 
+                avg_number_of_migrant_in_queue += (currently_processing_2.y - currently_processing_2.x);
                 completed_migrants += 1;
 
                 if (completed_migrants == total_migrants) break;
 
                 // Bring the next one from the queue;
                 if(waiting_q.empty()){  // Witing Queue is empty
-                    processing_state = 0;
+                    processing_state_2 = 0;
                 }
                 else{  
-                    currently_processing =  waiting_q.front();
+                    currently_processing_2 =  waiting_q.front();
                     waiting_q.pop();
-                    currently_processing.y = current_time;
-                    processing_complete_timing = current_time + mu_generator(rnd_gen);
+                    currently_processing_2.y = current_time;
+                    processing_complete_timing_2 = current_time + mu_generator(rnd_gen);
+                }   
+
+            }
+            else{
+                current_time = processing_complete_timing_1;
+                currently_processing_1.z = current_time;
+
+                avg_number_of_migrants_getting_checked += (currently_processing_1.z - currently_processing_1.y);
+                avg_response_time += (currently_processing_1.z - currently_processing_1.x);
+                avg_time_for_migrant_in_queue += (currently_processing_1.y - currently_processing_1.x); 
+                avg_number_of_migrant_in_queue += (currently_processing_1.y - currently_processing_1.x);
+                completed_migrants += 1;
+
+                if (completed_migrants == total_migrants) break;
+
+                // Bring the next one from the queue;
+                if(waiting_q.empty()){  // Witing Queue is empty
+                    processing_state_1 = 0;
                 }
+                else{  
+                    currently_processing_1 =  waiting_q.front();
+                    waiting_q.pop();
+                    currently_processing_1.y = current_time;
+                    processing_complete_timing_1 = current_time + mu_generator(rnd_gen);
+                } 
 
             }
         }
@@ -125,10 +197,10 @@ int main(){
     avg_time_for_migrant_in_queue /= total_migrants;
     avg_number_of_migrant_in_queue /= current_time;
 
-    cout << avg_number_of_migrants_getting_checked << endl;
-    cout << avg_response_time << endl;
-    cout << avg_time_for_migrant_in_queue << endl;
-    cout << avg_number_of_migrant_in_queue << endl;
+    std::cout << avg_number_of_migrants_getting_checked << endl;
+    std::cout << avg_response_time << endl;
+    std::cout << avg_time_for_migrant_in_queue << endl;
+    std::cout << avg_number_of_migrant_in_queue << endl;
 
 
 
