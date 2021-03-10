@@ -18,10 +18,10 @@ int main(){
 
 
 
-    std::cout << "Enter the lambda_1 value in rate/second: " << endl;
+    cout << "Enter the lambda_1 value in rate/second: " << endl;
     cin >> lambda_1;
 
-    std::cout << "Enter the mu_1 value in rate/second: " << endl;
+    cout << "Enter the mu_1 value in rate/second: " << endl;
     cin >> mu_1;
     
 
@@ -197,10 +197,10 @@ int main(){
     avg_time_for_migrant_in_queue /= total_migrants;
     avg_number_of_migrant_in_queue /= current_time;
 
-    std::cout << avg_number_of_migrants_getting_checked << endl;
-    std::cout << avg_response_time << endl;
-    std::cout << avg_time_for_migrant_in_queue << endl;
-    std::cout << avg_number_of_migrant_in_queue << endl;
+    cout << avg_number_of_migrants_getting_checked << endl;
+    cout << avg_response_time << endl;
+    cout << avg_time_for_migrant_in_queue << endl;
+    cout << avg_number_of_migrant_in_queue << endl;
 
 
 
