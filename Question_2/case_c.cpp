@@ -2,7 +2,7 @@
 
 using namespace std;
 
-
+// This struct will store timing information for each migrant
 struct Timing // queue entering time, queue leaving time, system leaving time
 { 
    double x;

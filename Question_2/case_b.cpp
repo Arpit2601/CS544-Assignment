@@ -2,7 +2,7 @@
 
 using namespace std;
 
-
+// This struct will store timing information for each migrant
 struct Timing // queue entering time, queue leaving time, system leaving time
 { 
    double x;
@@ -60,21 +60,24 @@ int main(){
     double processing_complete_timing_2 = current_time;
 
 
-
+    // Variables in which we will store the result
     double avg_number_of_migrants_getting_checked = 0;
     double avg_response_time = 0;
     double avg_time_for_migrant_in_queue = 0;
     double avg_number_of_migrant_in_queue = 0;
+    // Number of migrants we are going to process 
     long long total_migrants = 1000000;
 
+// This will act as the queue
     queue<Timing> waiting_q;
 
+// These variables will store the timing values of the currently processing migrants
     Timing currently_processing_1;
     Timing currently_processing_2;
 
 
 
-    // Run the loop till we have processed 10^6 migrants
+    // Run the loop till we have processed all the migrants
     while(completed_migrants < total_migrants){
 
         if((processing_state_1 == 0) && (processing_state_2 == 0)){  // Both the officers are empty, give the next incoming migrant to one of the officer
@@ -89,8 +92,10 @@ int main(){
             processing_state_1 = 1;        
 
         }
-        else if((processing_state_1 == 0) && (processing_state_2 == 1)){  // One officer is empty, check whether the other officers completion time is less than the next incoming migrant time and if so return to 0 state else send the next migrant to empty officer
-            if (next_incoming_timing <= processing_complete_timing_2){
+        // One officer is empty, check whether the other officers completion time is less than the next incoming migrant time 
+        // and if so return to 0 state else send the next migrant to empty officer
+        else if((processing_state_1 == 0) && (processing_state_2 == 1)){  
+            if (next_incoming_timing <= processing_complete_timing_2){  // next migrant is coming
 
                 current_time = next_incoming_timing;
 
@@ -101,7 +106,7 @@ int main(){
                 processing_state_1 = 1;
 
             }
-            else{
+            else{  // processing is getting completed
 
                 current_time = processing_complete_timing_2;
                 currently_processing_2.z = current_time;
@@ -116,7 +121,7 @@ int main(){
                 processing_state_2 = 0;
             }
         }
-        else if((processing_state_1 == 1) && (processing_state_2 == 0)){  // Similar to above case
+        else if((processing_state_1 == 1) && (processing_state_2 == 0)){  // Similar to earlier case
             if (next_incoming_timing <= processing_complete_timing_1){
                 current_time = next_incoming_timing;
 
@@ -144,16 +149,16 @@ int main(){
 
 
         }
-        else{  // Both the officers are busy,
+        else{  // Both the officers are busy. Now we will check which event will occur first, whether next migrant will come, or 1st officer will complete its processing, or 2nd officer will complete its processing 
 
             if (next_incoming_timing <= min(processing_complete_timing_2, processing_complete_timing_1)){
-            // Next migrant is coming
+            // Next migrant is coming and add it to queue
                 current_time = next_incoming_timing;
                 next_incoming_timing = current_time + lambda_generator(rnd_gen);
                 waiting_q.push({current_time, 0, 0});
             }
             else if(processing_complete_timing_2 == min(processing_complete_timing_2, processing_complete_timing_1)){
-                // 2nd officer is completing its service
+                // 2nd officer is completing its service, after completion we will bring the next migrant from the queue
                 current_time = processing_complete_timing_2;
                 currently_processing_2.z = current_time;
 
@@ -178,6 +183,7 @@ int main(){
 
             }
             else{
+                // 1st offficer is completing its service
                 current_time = processing_complete_timing_1;
                 currently_processing_1.z = current_time;
 
@@ -204,13 +210,13 @@ int main(){
         }
     }
 
-
+// Calculate the values
     avg_number_of_migrants_getting_checked /= current_time;
     avg_response_time /= total_migrants;
     avg_time_for_migrant_in_queue /= total_migrants;
     avg_number_of_migrant_in_queue /= current_time;
 
-
+// Output the values
     ofstream outfile;
     outfile.open("case_b.txt");
 
