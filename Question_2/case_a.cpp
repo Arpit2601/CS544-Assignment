@@ -2,7 +2,7 @@
 
 using namespace std;
 
-
+// This struct will store timing information for each migrant
 struct Timing // queue entering time, queue leaving time, system leaving time
 { 
    double x;
@@ -17,7 +17,7 @@ int main(){
     double mu_1;
 
 
-
+// Sanity checks
     cout << "Enter the lambda value(incoming rate for each queue) in person/second: " << endl;
     cin >> lambda_1;
 
@@ -40,7 +40,7 @@ int main(){
         return(0);
     }
 
-
+// Exponential distribution generation
     std::random_device rd; 
     std::mt19937 rnd_gen (rd ());
 
@@ -58,29 +58,35 @@ int main(){
     double current_time = 0;
     long long completed_migrants = 0;
 
-
+// Next time when the migrants will come
     vector<double> next_incoming_timing = {current_time + lambda_generator[0](rnd_gen), current_time + lambda_generator[1](rnd_gen)};
+// States which tell whether the officer is working or not
     vector<int> processing_state = {0, 0};
+// Time when the current servicing will be completed
     vector<double> processing_complete_timing = {current_time, current_time};
 
-
+// Variables used to calculate the averages
     vector<double> avg_number_of_migrants_getting_checked = {0, 0};
     vector<double> avg_response_time = {0, 0};
     vector<double> avg_time_for_migrant_in_queue = {0, 0};
     vector<double> avg_number_of_migrant_in_queue = {0, 0};
+
     long long total_migrants = 1000000;
+// Migrants in each queue
     vector<long long> migrants = {0, 0};
 
-
+// Queue which will hold the migrant
     vector<queue<Timing>> waiting_q = {queue<Timing> (), queue<Timing> ()};
+
+// Timing values of migrants which are currently getting serviced
     vector<Timing> currently_processing = {{0, 0, 0}, {0, 0, 0}};
 
 
 
-
+// Run the loop till we have not serviced "total_migrants"
     while(completed_migrants < total_migrants){
 
-
+// First check which event will happen first(next incoming or next completion of service)
         vector<double> times;
 
         for(int i = 0; i < 2; i++){
@@ -112,20 +118,20 @@ int main(){
             if(processing_state[min_index] == 0){  // The server is empty, directly give the migrant to server
                 currently_processing[min_index] = {current_time, current_time, 0};
                 processing_state[min_index] = 1;
-                processing_complete_timing[min_index] = current_time + mu_generator[min_index](rnd_gen);
+                processing_complete_timing[min_index] = current_time + mu_generator[min_index](rnd_gen); // Calculate the next completion time
             }
             else{  // The server is busy,  deposit the migrant to the queue
                 waiting_q[min_index].push({current_time, 0, 0});
             }
 
-            next_incoming_timing[min_index] = current_time + lambda_generator[min_index](rnd_gen);
+            next_incoming_timing[min_index] = current_time + lambda_generator[min_index](rnd_gen); // calculate the next incoming time
         }
         else{
-            // We have an outgoing migrant
+            //A migrant has been serviced, we have an outgoing migrant, complete the timing tuple and do calculations
             min_index = min_index % 2;
             current_time = processing_complete_timing[min_index];
             currently_processing[min_index].z = current_time;
-
+            
             avg_number_of_migrants_getting_checked[min_index] += (currently_processing[min_index].z - currently_processing[min_index].y);
             avg_response_time[min_index] += (currently_processing[min_index].z - currently_processing[min_index].x);
             avg_time_for_migrant_in_queue[min_index] += (currently_processing[min_index].y - currently_processing[min_index].x); 
@@ -137,10 +143,10 @@ int main(){
                 break;
             }
 
-            if(waiting_q[min_index].empty()){  // Q is empty change the processing state to 1
+            if(waiting_q[min_index].empty()){  // Queue is empty change the processing state to 1
                 processing_state[min_index] = 0;
             }
-            else{
+            else{  // Pop from the queue
                 currently_processing[min_index] = waiting_q[min_index].front();
                 waiting_q[min_index].pop();
                 currently_processing[min_index].y = current_time;
@@ -153,7 +159,7 @@ int main(){
     }
 
 
-    for(int i = 0; i < 2; i++){
+    for(int i = 0; i < 2; i++){   // Calculate the values for the queue
 
         avg_number_of_migrants_getting_checked[i] /= current_time;
         avg_response_time[i] /= migrants[i];

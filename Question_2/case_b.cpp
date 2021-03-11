@@ -17,7 +17,7 @@ int main(){
     double mu_1;
 
 
-
+// Sanity Checks
     cout << "Enter the lambda(incoming rate for the common queue) value in person/second: " << endl;
     cin >> lambda_1;
 
@@ -39,7 +39,7 @@ int main(){
         return(0);
     }
     
-
+// Exponential distribution
     random_device rd; 
     mt19937 rnd_gen (rd ());
 
@@ -51,10 +51,12 @@ int main(){
     long long completed_migrants = 0;
 
 
-    double next_incoming_timing = current_time + lambda_generator(rnd_gen);
+    double next_incoming_timing = current_time + lambda_generator(rnd_gen);  // next time when a migrant will come
+    // States which tell us whether an officer is working or not
     int processing_state_1 = 0;
     int processing_state_2 = 0;
-    double processing_complete_timing_1 = current_time;
+    // Time when the current processing will be completed
+    double processing_complete_timing_1 = current_time; 
     double processing_complete_timing_2 = current_time;
 
 
@@ -72,10 +74,11 @@ int main(){
 
 
 
-
+    // Run the loop till we have processed 10^6 migrants
     while(completed_migrants < total_migrants){
 
-        if((processing_state_1 == 0) && (processing_state_2 == 0)){
+        if((processing_state_1 == 0) && (processing_state_2 == 0)){  // Both the officers are empty, give the next incoming migrant to one of the officer
+
             // The border agent is sitting empty, directly move to the time when the next incoming migrant will come
             current_time = next_incoming_timing;
 
@@ -86,9 +89,8 @@ int main(){
             processing_state_1 = 1;        
 
         }
-        else if((processing_state_1 == 0) && (processing_state_2 == 1)){
+        else if((processing_state_1 == 0) && (processing_state_2 == 1)){  // One officer is empty, check whether the other officers completion time is less than the next incoming migrant time and if so return to 0 state else send the next migrant to empty officer
             if (next_incoming_timing <= processing_complete_timing_2){
-                // give this worker to first guy
 
                 current_time = next_incoming_timing;
 
@@ -114,10 +116,8 @@ int main(){
                 processing_state_2 = 0;
             }
         }
-        else if((processing_state_1 == 1) && (processing_state_2 == 0)){
+        else if((processing_state_1 == 1) && (processing_state_2 == 0)){  // Similar to above case
             if (next_incoming_timing <= processing_complete_timing_1){
-                // give this worker to first guy
-
                 current_time = next_incoming_timing;
 
                 currently_processing_2 = {current_time, current_time, 0};
@@ -144,11 +144,8 @@ int main(){
 
 
         }
-        else{
+        else{  // Both the officers are busy,
 
-
-
-            // The border agent is not empty
             if (next_incoming_timing <= min(processing_complete_timing_2, processing_complete_timing_1)){
             // Next migrant is coming
                 current_time = next_incoming_timing;
@@ -156,6 +153,7 @@ int main(){
                 waiting_q.push({current_time, 0, 0});
             }
             else if(processing_complete_timing_2 == min(processing_complete_timing_2, processing_complete_timing_1)){
+                // 2nd officer is completing its service
                 current_time = processing_complete_timing_2;
                 currently_processing_2.z = current_time;
 
@@ -168,7 +166,7 @@ int main(){
                 if (completed_migrants == total_migrants) break;
 
                 // Bring the next one from the queue;
-                if(waiting_q.empty()){  // Witing Queue is empty
+                if(waiting_q.empty()){  // Writing Queue is empty
                     processing_state_2 = 0;
                 }
                 else{  
