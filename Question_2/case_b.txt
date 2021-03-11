@@ -1,0 +1,4 @@
+Average number of workers getting checked: 0.996953
+Average response time for workers in getting checked: 0.332036
+Average time for which a worker has to wait until getting checked: 0.0821492
+Average number of workers waiting in thequeue before each officer: 0.327743

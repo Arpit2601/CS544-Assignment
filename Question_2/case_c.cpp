@@ -36,10 +36,10 @@ int main(){
         return(0);
     }
 
-    if(lambda_1/mu_1 >= 1){
-        cout << "Queue stability condition is violated. Enter valid lambda, mu values" << endl;
-        return(0);
-    }
+    // if(lambda_1/mu_1 >= 1){
+    //     cout << "Queue stability condition is violated. Enter valid lambda, mu values" << endl;
+    //     return(0);
+    // }
 
 // Exponential distribution generation
     std::random_device rd; 
