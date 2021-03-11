@@ -18,26 +18,26 @@ int main(){
 
 
 
-    cout << "Enter the lambda value(incoming rate for each queue) in rate/second: " << endl;
+    cout << "Enter the lambda value(incoming rate for each queue) in person/second: " << endl;
     cin >> lambda_1;
 
-    cout << "Enter the mu value(processing rate of each officer) in rate/second: " << endl;
+    cout << "Enter the mu value(processing rate of each officer) in person/second: " << endl;
     cin >> mu_1;
     
 
     if(lambda_1 <= 0){
         cout << "Enter valid lambda value" << endl;
-        return;
+        return(0);
     }
 
     if(mu_1 <= 0){
         cout << "Enter valid mu value" << endl;
-        return;
+        return(0);
     }
 
     if(lambda_1/mu_1 >= 1){
         cout << "Queue stability condition is violated. Enter valid lambda, mu values" << endl;
-        return;
+        return(0);
     }
 
 
@@ -163,6 +163,10 @@ int main(){
     }
 
 
+    ofstream outfile;
+    outfile.open("case_a.txt");
+
+
     for(int i = 0; i < 2; i++){
         cout << "Values for Queue " << to_string(i+1) << endl;
         cout << "Average number of workers getting checked: ";
@@ -174,9 +178,22 @@ int main(){
         cout << "Average number of workers waiting in thequeue before each officer: ";
         cout << avg_number_of_migrant_in_queue[i] << endl;
 
+
+        outfile << "Values for Queue " << to_string(i+1) << endl;
+        outfile << "Average number of workers getting checked: ";
+        outfile << avg_number_of_migrants_getting_checked[i] << endl;
+        outfile << "Average response time for workers in getting checked: ";
+        outfile << avg_response_time[i] << endl;
+        outfile << "Average time for which a worker has to wait until getting checked: ";
+        outfile << avg_time_for_migrant_in_queue[i] << endl;
+        outfile << "Average number of workers waiting in thequeue before each officer: ";
+        outfile << avg_number_of_migrant_in_queue[i] << endl;
+
+
     }
 
-
+    outfile.close();
+    return(0);
 
 
 
