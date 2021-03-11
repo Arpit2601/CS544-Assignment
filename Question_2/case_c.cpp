@@ -72,8 +72,6 @@ int main(){
 
 
     while(completed_migrants < total_migrants){
-
-
         vector<double> times;
 
         for(int i = 0; i < 2; i++){
@@ -110,6 +108,9 @@ int main(){
             else{  // The server is busy,  deposit the migrant to the queue
                 if (waiting_q[min_index].size() < 5){
                     waiting_q[min_index].push({current_time, 0, 0});
+                }
+                else{ // Dont push anything
+
                 }
             }
 
