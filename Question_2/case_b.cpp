@@ -18,11 +18,26 @@ int main(){
 
 
 
-    cout << "Enter the lambda_1 value in rate/second: " << endl;
+    cout << "Enter the lambda(incoming rate for the common queue) value in rate/second: " << endl;
     cin >> lambda_1;
 
-    cout << "Enter the mu_1 value in rate/second: " << endl;
+    cout << "Enter the mu(processing rate of each officer) value in rate/second: " << endl;
     cin >> mu_1;
+
+    if(lambda_1 <= 0){
+        cout << "Enter valid lambda value" << endl;
+        return;
+    }
+
+    if(mu_1 <= 0){
+        cout << "Enter valid mu value" << endl;
+        return;
+    }
+
+    if(lambda_1/(2*mu_1) >= 1){
+        cout << "Queue stability condition is violated. Enter valid lambda, mu values" << endl;
+        return;
+    }
     
 
     random_device rd; 
@@ -197,11 +212,14 @@ int main(){
     avg_time_for_migrant_in_queue /= total_migrants;
     avg_number_of_migrant_in_queue /= current_time;
 
+    cout << "Average number of workers getting checked: ";
     cout << avg_number_of_migrants_getting_checked << endl;
+    cout << "Average response time for workers in getting checked: ";
     cout << avg_response_time << endl;
+    cout << "Average time for which a worker has to wait until getting checked: ";
     cout << avg_time_for_migrant_in_queue << endl;
+    cout << "Average number of workers waiting in thequeue before each officer: ";
     cout << avg_number_of_migrant_in_queue << endl;
-
 
 
 
