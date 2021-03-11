@@ -108,7 +108,9 @@ int main(){
                 processing_complete_timing[min_index] = current_time + mu_generator[min_index](rnd_gen);
             }
             else{  // The server is busy,  deposit the migrant to the queue
-                waiting_q[min_index].push({current_time, 0, 0});
+                if (waiting_q[min_index].size() < 5){
+                    waiting_q[min_index].push({current_time, 0, 0});
+                }
             }
 
             next_incoming_timing[min_index] = current_time + lambda_generator[min_index](rnd_gen);
@@ -139,10 +141,7 @@ int main(){
                 currently_processing[min_index].y = current_time;
                 processing_complete_timing[min_index] = current_time + mu_generator[min_index](rnd_gen);
             }
-
-
         }
-
     }
 
 
