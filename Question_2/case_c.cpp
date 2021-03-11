@@ -124,7 +124,7 @@ int main(){
                 if (waiting_q[min_index].size() < 5){  // Queue size is less than 5 so push in queue
                     waiting_q[min_index].push({current_time, 0, 0});
                 }
-                else{ // Dont push anything
+                else{ // Packet dropped
 
                 }
             }
