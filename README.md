@@ -21,4 +21,4 @@ E.g. to run ARPANET connections with 24 node topology using dist as cost paramet
 
 3) `$./a.out`
 
-The above code will run **Case A** simulation. It will ask you to enter lambda and mu value. After theat the simulation will run and values will be printed on the console and in a file. Similarly to run the code for **Case B** and **Case C** replace `$ g++ case_a.cpp`with `$ g++ case_b.cpp` and `$ g++ case_c.cpp` respectively. 
+The above code will run **Case A** simulation. It will ask you to enter lambda and mu value. After that, the simulation will run and, values will be printed on the console and in a file `case_a.txt`. Similarly to run the code for **Case B** and **Case C** replace `$ g++ case_a.cpp`with `$ g++ case_b.cpp` and `$ g++ case_c.cpp` respectively, and execute the generated executable using `$./a.out`. 
